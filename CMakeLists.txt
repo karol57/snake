@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 3.15.5)
+project(Snake)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS_DEBUG  "-ggdb3")
+set(CMAKE_EXE_LINKER_FLAGS "-mconsole")
+add_executable(Snake main.cpp DeltaMeasurer.cpp SnakeBody.cpp Snake.cpp Game.cpp Terrain.cpp helpers/Sdl.cpp)
+
+find_package(SDL2 REQUIRED)
+target_include_directories(Snake SYSTEM PRIVATE ${SDL2_INCLUDE_DIRS})
+target_link_libraries(Snake PRIVATE ${SDL2_LIBRARIES} -lSDL2_image)
