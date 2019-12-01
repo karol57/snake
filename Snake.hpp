@@ -2,7 +2,7 @@
 
 #include "SnakeBody.hpp"
 #include "SDL2/SDL_keycode.h"
-class SDL_Surface;
+class SDL_Renderer;
 
 class Snake
 {
@@ -11,7 +11,7 @@ public:
     Snake();
 
     void update(double dt);
-    void draw(SDL_Surface&);
+    void draw(SDL_Renderer&);
     void onKeyDown(SDL_Keycode key);
 
     void reset();

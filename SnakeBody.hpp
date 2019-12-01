@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <memory>
-class SDL_Surface;
+class SDL_Renderer;
 
 class SnakeBody
 {
@@ -10,7 +10,7 @@ public:
     SnakeBody(int x, int y, int px, int py);
     void advance(int x, int y, int px, int py);
     void grow(int x, int y, int px, int py);
-    void draw(SDL_Surface& surface);
+    void draw(SDL_Renderer&);
 
     const SnakeBody * tail() const noexcept { return m_tail.get(); }
     int x() const noexcept { return m_x; }

@@ -1,9 +1,9 @@
 #include "SnakeBody.hpp"
 #include "SDL2/SDL_rect.h"
-#include "SDL2/SDL_surface.h"
 #include "SDL2/SDL_pixels.h"
+#include <SDL2/SDL_render.h>
 
-extern SDL_Surface* g_sprites;
+extern SDL_Texture* g_sprites;
 
 enum SnakeBody::TYPE : uint8_t
 {
@@ -77,10 +77,10 @@ void SnakeBody::grow(int x, int y, int px, int py) {
     m_x = x;
     m_y = y;
 }
-void SnakeBody::draw(SDL_Surface& surface)
+void SnakeBody::draw(SDL_Renderer& renderer)
 {
     if (m_tail)
-        m_tail->draw(surface);
+        m_tail->draw(renderer);
         
     SDL_Rect rc{ m_x * 16, m_y * 16, 16, 16 };
     static SDL_Rect body_sprites[] =
@@ -98,5 +98,5 @@ void SnakeBody::draw(SDL_Surface& surface)
         {  0,  48, 16, 16 },
         { 16,  48, 16, 16 },
     };
-    SDL_BlitSurface(g_sprites, &body_sprites[m_type], &surface, &rc);
+    SDL_RenderCopy(&renderer, g_sprites, &body_sprites[m_type], &rc);
 }

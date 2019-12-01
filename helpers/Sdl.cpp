@@ -1,10 +1,27 @@
 #include "SdlImage.hpp"
+#include "SdlRenderer.hpp"
 #include "SdlSurface.hpp"
 #include "SdlWindow.hpp"
 #include <stdexcept>
 #include <SDL2/SDL_image.h>
 
 using namespace std::string_literals;
+
+SdlRendererPtr SdlCreateRenderer(SDL_Window * window, int index, Uint32 flags)
+{
+    SdlRendererPtr result{ SDL_CreateRenderer(window, index, flags) };
+    if (!result)
+        throw std::runtime_error("SDL_CreateRenderer: "s + SDL_GetError());
+    return result;
+}
+
+SdlTexturePtr SdlCreateTextureFromSurface(SDL_Renderer * renderer, SDL_Surface * surface)
+{
+    SdlTexturePtr result{ SDL_CreateTextureFromSurface(renderer, surface) };
+    if (!result)
+        throw std::runtime_error("SDL_CreateTextureFromSurface: "s + SDL_GetError());
+    return result;
+}
 
 SdlSurfacePtr SdlCreateRGBSurfaceWithFormat(Uint32 flags, int width, int height, int depth, Uint32 format)
 {

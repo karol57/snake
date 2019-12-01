@@ -1,7 +1,7 @@
 #include "Snake.hpp"
 
 #include <SDL2/SDL_rect.h>
-#include <SDL2/SDL_surface.h>
+#include <SDL2/SDL_render.h>
 
 #include <iostream>
 
@@ -17,7 +17,7 @@ enum Snake::DIR : uint8_t
 
 constexpr static double velocity = 15; // [cells/s]
 constexpr static double growTime = .5; // [s/part]
-extern SDL_Surface* g_sprites;
+extern SDL_Texture* g_sprites;
 
 Snake::Snake()
     : m_x{ 40 }, m_y{ 30 }
@@ -81,10 +81,10 @@ void Snake::update(double dt)
     m_y = new_y;
 }
 
-void Snake::draw(SDL_Surface& surface)
+void Snake::draw(SDL_Renderer& renderer)
 {
     if (m_tail)
-        m_tail->draw(surface);
+        m_tail->draw(renderer);
 
     static SDL_Rect head_sprites[] =
     {
@@ -94,7 +94,7 @@ void Snake::draw(SDL_Surface& surface)
         { 32,  0, 16, 16 },
     };
     SDL_Rect rc{ m_x * 16, m_y * 16, 16, 16 };
-    SDL_BlitSurface(g_sprites, &head_sprites[m_head], &surface, &rc);
+    SDL_RenderCopy(&renderer, g_sprites, &head_sprites[m_head], &rc);
 }
 
 void Snake::onKeyDown(SDL_Keycode key)
