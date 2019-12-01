@@ -14,8 +14,7 @@ Game::Game()
                                 SDL_WINDOW_SHOWN) }
     , m_renderer{ SdlCreateRenderer(m_window.get(), -1, SDL_RENDERER_ACCELERATED) }
     , m_sprites{ SdlCreateTextureFromSurface(m_renderer.get(), ImgLoad("Snake.png").get()) }
-    , m_terrain{ 64, 48 }
-    , m_terrainTex{ SdlCreateTextureFromSurface(m_renderer.get(), m_terrain.generate().get()) }
+    , m_terrain{ *m_renderer, 64, 48 }
 {
     g_sprites = m_sprites.get();
 }
@@ -39,7 +38,7 @@ int Game::run()
 void Game::render()
 {
     SDL_RenderClear(m_renderer.get());
-    SDL_RenderCopy(m_renderer.get(), m_terrainTex.get(), nullptr, nullptr);
+    m_terrain.draw(*m_renderer);
     m_snake.draw(*m_renderer);
     SDL_RenderPresent(m_renderer.get());
 }
@@ -67,7 +66,7 @@ void Game::pollSdl()
                         m_running = false;
                     else if (event.key.keysym.sym == SDLK_r)
                     {
-                        m_terrainTex = SdlCreateTextureFromSurface(m_renderer.get(), m_terrain.generate().get());
+                        m_terrain.regenerate(*m_renderer);
                         m_snake.reset();
                     }
                 }

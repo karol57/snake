@@ -15,12 +15,15 @@ void drawTile(int x, int y, const SDL_Rect& sprite, SDL_Surface* sprites, SDL_Su
     SDL_BlitSurface(sprites, &sprite, surface, &rc);
 }
 
-Terrain::Terrain(int width, int height)
+Terrain::Terrain(SDL_Renderer& renderer, int width, int height)
     : m_width{ width }, m_height{ height }
     , m_sprites{ ImgLoad("grass_tileset_16x16.png") }
-{}
+    , m_spritesTex{ SdlCreateTextureFromSurface(&renderer, m_sprites.get()) }
+{
+    regenerate(renderer);
+}
 
-SdlSurfacePtr Terrain::generate() noexcept
+void Terrain::regenerate(SDL_Renderer& renderer) noexcept
 {
     SdlSurfacePtr result{ SdlCreateRGBSurfaceWithFormat(m_sprites->flags, TILE_SIZE * m_width, TILE_SIZE * m_height, 0, m_sprites->format->format) };
 
@@ -57,5 +60,10 @@ SdlSurfacePtr Terrain::generate() noexcept
         }
     }
 
-    return result;
+    m_terrainTex = SdlCreateTextureFromSurface(&renderer, result.get());
+}
+
+void Terrain::draw(SDL_Renderer& renderer)
+{
+    SDL_RenderCopy(&renderer, m_terrainTex.get(), nullptr, nullptr);
 }

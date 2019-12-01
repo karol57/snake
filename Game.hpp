@@ -21,6 +21,5 @@ private:
     SdlRendererPtr m_renderer;
     SdlTexturePtr m_sprites;
     Terrain m_terrain;
-    SdlTexturePtr m_terrainTex;
     Snake m_snake;
 };
