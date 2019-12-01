@@ -19,7 +19,3 @@ int main(int argc, char* args[]) {
 
     return Game{}.run();
 }
-
-// Assets:
-// https://opengameart.org/content/snake-sprites-sound (eugeneloza)
-// https://opengameart.org/content/grass-tileset-16x16 (Bonsaiheldin | http://bonsaiheld.org)
