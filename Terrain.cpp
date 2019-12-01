@@ -8,14 +8,22 @@ using namespace std::string_literals;
 
 constexpr auto TILE_SIZE = 16;
 
+static
+void drawTile(int x, int y, const SDL_Rect& sprite, SDL_Surface* sprites, SDL_Surface* surface)
+{
+    SDL_Rect rc; rc.x = x * 16; rc.y = y * 16;
+    SDL_BlitSurface(sprites, &sprite, surface, &rc);
+}
+
 Terrain::Terrain(int width, int height)
     : m_width{ width }, m_height{ height }
     , m_sprites{ ImgLoad("grass_tileset_16x16.png") }
-    , m_surface{ SdlCreateRGBSurfaceWithFormat(m_sprites->flags, TILE_SIZE * width, TILE_SIZE * height, 0, m_sprites->format->format) }
 {}
 
-void Terrain::generate() noexcept
+SdlSurfacePtr Terrain::generate() noexcept
 {
+    SdlSurfacePtr result{ SdlCreateRGBSurfaceWithFormat(m_sprites->flags, TILE_SIZE * m_width, TILE_SIZE * m_height, 0, m_sprites->format->format) };
+
     enum TYPE
     {
         GRASS_BRIGHT_HOLE_TOP_LEFT, GRASS_TOP, GRASS_HOLE_TOP_RIGHT,
@@ -40,18 +48,14 @@ void Terrain::generate() noexcept
         for (int x = 0; x < m_width; ++x)
         {
             const double v = rand() / (double)RAND_MAX;
-            if (v < 0.8)
-                drawTile(x, y, sprites[GRASS_NORMAL_1]);
-            else if (v < 0.9)
-                drawTile(x, y, sprites[GRASS_NORMAL_2]);
+            if (v < 0.9)
+                drawTile(x, y, sprites[GRASS_NORMAL_1], m_sprites.get(), result.get());
+            else if (v < 0.98)
+                drawTile(x, y, sprites[GRASS_NORMAL_2], m_sprites.get(), result.get());
             else
-                drawTile(x, y, sprites[GRASS_NORMAL_3]);
+                drawTile(x, y, sprites[GRASS_NORMAL_3], m_sprites.get(), result.get());
         }
     }
-}
 
-void Terrain::drawTile(int x, int y, const SDL_Rect& sprite)
-{
-    SDL_Rect rc; rc.x = x * 16; rc.y = y * 16;
-    SDL_BlitSurface(m_sprites.get(), &sprite, m_surface.get(), &rc);
+    return result;
 }

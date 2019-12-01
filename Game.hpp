@@ -20,6 +20,7 @@ private:
     SdlWindowPtr m_window;
     SdlRendererPtr m_renderer;
     SdlTexturePtr m_sprites;
-    SdlTexturePtr m_terrain;
+    Terrain m_terrain;
+    SdlTexturePtr m_terrainTex;
     Snake m_snake;
 };
