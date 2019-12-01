@@ -3,6 +3,14 @@ Snake v0.9
 
 Another implementation of a Snake game in C++.
 
+Building & running
+------------------
+```
+> cd build
+> cmake .. -DCMAKE_BUILD_TYPE=Release
+> ./Snake
+```
+
 Assets
 ------
 * https://opengameart.org/content/snake-sprites-sound (eugeneloza)
