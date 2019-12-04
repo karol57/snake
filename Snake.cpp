@@ -3,20 +3,24 @@
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 
-enum Snake::DIR : uint8_t
-{
-    DIR_WEST,
-    DIR_NORTH,
-    DIR_EAST,
-    DIR_SOUTH,
-    DIR_LOCKED,
-    DIR_START
-};
-
 constexpr static double velocity = 15; // [cells/s]
 constexpr static double growTime = .5; // [s/part]
-extern SDL_Texture* g_sprites;
+extern SnakeTiles* g_snakeTiles;
 
+SnakeTiles::Tile Snake::dirToTile(Dir dir) noexcept
+{
+    switch (dir)
+    {
+        case DIR_NORTH: return SnakeTiles::HEAD_NORTH;
+        case DIR_EAST:  return SnakeTiles::HEAD_EAST;
+        case DIR_SOUTH: return SnakeTiles::HEAD_SOUTH;
+        case DIR_WEST:  return SnakeTiles::HEAD_WEST;
+        default:;
+    }
+    __builtin_unreachable();
+}
+
+static
 void wrap(int& v, int min, int max)
 {
     if (v < min)
@@ -88,16 +92,7 @@ void Snake::draw(SDL_Renderer& renderer)
 {
     if (m_tail)
         m_tail->draw(renderer);
-
-    static SDL_Rect head_sprites[] =
-    {
-        { 48,  0, 16, 16 },
-        {  0,  0, 16, 16 },
-        { 16,  0, 16, 16 },
-        { 32,  0, 16, 16 },
-    };
-    SDL_Rect rc{ m_pos.x * 16, m_pos.y * 16, 16, 16 };
-    SDL_RenderCopy(&renderer, g_sprites, &head_sprites[m_dir], &rc);
+    g_snakeTiles->drawTile(renderer, m_pos * 16, dirToTile(m_dir));
 }
 
 void Snake::onKeyDown(SDL_Keycode key)

@@ -67,7 +67,6 @@ void Terrain::regenerate(SDL_Renderer& renderer) noexcept
     m_terrainTex = SdlCreateTextureFromSurface(&renderer, result.get());
 }
 
-#include <iostream>
 void Terrain::update(double dt)
 {
     m_foodTimer -= dt;

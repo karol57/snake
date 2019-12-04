@@ -5,6 +5,7 @@
 #include "helpers/SdlWindow.hpp"
 #include "helpers/SdlRenderer.hpp"
 #include "Terrain.hpp"
+#include "SnakeTiles.hpp"
 
 class Game
 {
@@ -19,7 +20,7 @@ private:
     bool m_running;
     SdlWindowPtr m_window;
     SdlRendererPtr m_renderer;
-    SdlTexturePtr m_sprites;
+    SnakeTiles m_snakeTiles;
     Terrain m_terrain;
     Snake m_snake;
 };

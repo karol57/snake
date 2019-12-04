@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 #include "helpers/SdlImage.hpp"
 
-SDL_Texture* g_sprites;
+SnakeTiles* g_snakeTiles;
 
 
 Game::Game()
@@ -13,10 +13,10 @@ Game::Game()
                                 1024, 768,
                                 SDL_WINDOW_SHOWN) }
     , m_renderer{ SdlCreateRenderer(m_window.get(), -1, SDL_RENDERER_ACCELERATED) }
-    , m_sprites{ SdlCreateTextureFromSurface(m_renderer.get(), ImgLoad("Snake.png").get()) }
+    , m_snakeTiles{ *m_renderer, "Snake.png" }
     , m_terrain{ *m_renderer, { 64, 48 } }
 {
-    g_sprites = m_sprites.get();
+    g_snakeTiles = &m_snakeTiles;
 }
 
 int Game::run()
