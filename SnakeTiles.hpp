@@ -1,11 +1,12 @@
 #pragma once
+#include <cstdint>
 #include "helpers/SdlRenderer.hpp"
 #include "vec2d.hpp"
 
 class SnakeTiles
 {
 public:
-    enum Tile
+    enum Tile : uint8_t
     {
         HEAD_NORTH, HEAD_EAST, HEAD_SOUTH, HEAD_WEST,
         TAIL_SOUTH, TAIL_EAST, TAIL_NORTH, TAIL_WEST,

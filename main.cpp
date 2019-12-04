@@ -7,8 +7,6 @@
 using namespace std::string_literals;
 
 int main(int argc, char* args[]) {
-    srand(time(nullptr));
-
     if (const int ec = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER); ec < 0)
         throw std::runtime_error("SDL_Init (error " + std::to_string(ec) + "): " + SDL_GetError());
     C_RAII(SDL_Quit);

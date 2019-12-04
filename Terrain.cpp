@@ -81,13 +81,11 @@ void Terrain::update(double dt)
         std::uniform_int_distribution x_dist{ 0, m_size.width - 1 };
         std::uniform_int_distribution y_dist{ 0, m_size.height - 1 };
         int x, y;
-        int i = 0;
         do
         {
             x = x_dist(m_randomEngine); x_dist.reset();
             y = y_dist(m_randomEngine); y_dist.reset();
             it = m_foods.find({ x, y });
-            ++i;
         } while (it != m_foods.end());
 
         const int icon = std::uniform_int_distribution{ 0, 63 }(m_randomEngine);
