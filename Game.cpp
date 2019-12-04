@@ -14,7 +14,7 @@ Game::Game()
                                 SDL_WINDOW_SHOWN) }
     , m_renderer{ SdlCreateRenderer(m_window.get(), -1, SDL_RENDERER_ACCELERATED) }
     , m_sprites{ SdlCreateTextureFromSurface(m_renderer.get(), ImgLoad("Snake.png").get()) }
-    , m_terrain{ *m_renderer, 64, 48 }
+    , m_terrain{ *m_renderer, { 64, 48 } }
 {
     g_sprites = m_sprites.get();
 }
@@ -22,7 +22,7 @@ Game::Game()
 int Game::run()
 {
     m_running = true;
-    
+
     DeltaMeasurer dm;
     do {
         printf("%7.2f FPS (%5.2f ms)\r", dm.fps(), 1000*dm.delta());

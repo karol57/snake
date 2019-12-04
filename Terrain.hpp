@@ -6,11 +6,12 @@
 #include "helpers/SdlSurface.hpp"
 #include "helpers/SdlRenderer.hpp"
 #include "vec2d.hpp"
+#include "size2d.hpp"
 
 class Terrain
 {
 public:
-    Terrain(SDL_Renderer&, int width, int height);
+    Terrain(SDL_Renderer&, size2d size);
     void regenerate(SDL_Renderer&) noexcept;
 
     void update(double dt);
@@ -19,7 +20,7 @@ private:
     SdlSurfacePtr m_sprites;
     SdlTexturePtr m_food;
     SdlTexturePtr m_terrainTex;
-    int m_width, m_height;
+    size2d m_size;
     std::mt19937_64 m_randomEngine;
     double m_foodTimer;
     std::map<vec2d, SDL_Rect> m_foods;

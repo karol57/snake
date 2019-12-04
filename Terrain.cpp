@@ -15,8 +15,8 @@ void drawTile(int x, int y, const SDL_Rect& sprite, SDL_Surface* sprites, SDL_Su
     SDL_BlitSurface(sprites, &sprite, surface, &rc);
 }
 
-Terrain::Terrain(SDL_Renderer& renderer, int width, int height)
-    : m_width{ width }, m_height{ height }
+Terrain::Terrain(SDL_Renderer& renderer, size2d size)
+    : m_size{ size }
     , m_sprites{ ImgLoad("grass_tileset_16x16.png") }
     , m_food{ SdlCreateTextureFromSurface(&renderer, ImgLoad("Food.png").get()) }
     , m_randomEngine{ std::random_device()() }
@@ -27,7 +27,9 @@ Terrain::Terrain(SDL_Renderer& renderer, int width, int height)
 
 void Terrain::regenerate(SDL_Renderer& renderer) noexcept
 {
-    SdlSurfacePtr result{ SdlCreateRGBSurfaceWithFormat(m_sprites->flags, TILE_SIZE * m_width, TILE_SIZE * m_height, 0, m_sprites->format->format) };
+    const auto sizeInTiles = m_size * TILE_SIZE;
+    SdlSurfacePtr result{ SdlCreateRGBSurfaceWithFormat(m_sprites->flags, sizeInTiles.width, sizeInTiles.height, 0,
+        m_sprites->format->format) };
 
     enum TYPE
     {
@@ -48,9 +50,9 @@ void Terrain::regenerate(SDL_Renderer& renderer) noexcept
         {   0, 80, 16, 16 },
     };
 
-    for (int y = 0; y < m_height; ++y)
+    for (int y = 0; y < m_size.height; ++y)
     {
-        for (int x = 0; x < m_width; ++x)
+        for (int x = 0; x < m_size.width; ++x)
         {
             const double v = std::uniform_real_distribution{0.0, 1.0}(m_randomEngine);
             if (v < 0.9)
@@ -71,14 +73,14 @@ void Terrain::update(double dt)
     m_foodTimer -= dt;
     if (m_foodTimer <= 0)
     {
-        if (m_foods.size() >= m_width * m_height)
+        if (m_foods.size() >= m_size.area())
             return;
 
         m_foodTimer += std::uniform_real_distribution{0.5, 4.0}(m_randomEngine);
 
         std::map<vec2d, SDL_Rect>::iterator it;
-        std::uniform_int_distribution x_dist{ 0, m_width - 1 };
-        std::uniform_int_distribution y_dist{ 0, m_height - 1 };
+        std::uniform_int_distribution x_dist{ 0, m_size.width - 1 };
+        std::uniform_int_distribution y_dist{ 0, m_size.height - 1 };
         int x, y;
         int i = 0;
         do
@@ -90,9 +92,9 @@ void Terrain::update(double dt)
         } while (it != m_foods.end());
 
         const int icon = std::uniform_int_distribution{ 0, 63 }(m_randomEngine);
-        const int icon_x = icon % 8;
-        const int icon_y = icon / 8;
-        m_foods.insert(std::make_pair<vec2d, SDL_Rect>({ x, y }, { icon_x*16, icon_y*16, 16, 16 }));
+        const vec2d iconPos{ icon % 8, icon / 8 };
+        const vec2d iconTilePos = iconPos * TILE_SIZE;
+        m_foods.insert(std::make_pair<vec2d, SDL_Rect>(vec2d{ iconPos }, { iconTilePos.x, iconTilePos.y, 16, 16 }));
     }
 }
 
