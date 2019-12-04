@@ -16,10 +16,10 @@ public:
 
     void reset();
 private:
-    int m_x, m_y;
+    vec2d m_pos;
     double m_stepProgress;
     DIR m_dir;
-    DIR m_head;
+    DIR m_nextDir;
     double m_growTimer;
     std::unique_ptr<SnakeBody> m_tail;
 };

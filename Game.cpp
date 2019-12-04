@@ -45,6 +45,7 @@ void Game::render()
 
 void Game::update(double dt)
 {
+    m_terrain.update(dt);
     m_snake.update(dt);
 }
 

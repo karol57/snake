@@ -13,76 +13,73 @@ enum SnakeBody::TYPE : uint8_t
 };
 
 static
-SnakeBody::TYPE tailType(int x, int y, int px, int py)
+SnakeBody::TYPE tailType(vec2d pos, vec2d parentPos)
 {
-    if (x < px)      return SnakeBody::TAIL_EAST;
-    else if (x > px) return SnakeBody::TAIL_WEST;
-    else if (y < py) return SnakeBody::TAIL_NORTH;
-    else if (y > py) return SnakeBody::TAIL_SOUTH;
+    if (pos.x < parentPos.x)      return SnakeBody::TAIL_EAST;
+    else if (pos.x > parentPos.x) return SnakeBody::TAIL_WEST;
+    else if (pos.y < parentPos.y) return SnakeBody::TAIL_NORTH;
+    else if (pos.y > parentPos.y) return SnakeBody::TAIL_SOUTH;
+    abort();
     __builtin_unreachable();
 }
 
 static
-SnakeBody::TYPE bodyType(int cx, int cy, int x, int y, int px, int py)
+SnakeBody::TYPE bodyType(vec2d childPos, vec2d pos, vec2d parentPos)
 {
-    const int mtp_x = x - px;
-    const int mtp_y = y - py;
+    const vec2d mtp = pos - parentPos;
+    const vec2d mtc = pos - childPos;
 
-    if (mtp_x == 0)
+    if (mtp.x == 0)
     {
-        const int mtc_x = x - cx;
-        if (mtc_x < 0)
-            return ((mtp_y < 0) ? SnakeBody::BODY_SW : SnakeBody::BODY_NW);
-        else if (mtc_x == 0)
+        if (mtc.x < 0)
+            return ((mtp.y < 0) ? SnakeBody::BODY_SW : SnakeBody::BODY_NW);
+        else if (mtc.x == 0)
             return SnakeBody::BODY_NS;
-        /*else if (mtc_x > 0)*/
-        return mtp_y < 0 ? SnakeBody::BODY_SE : SnakeBody::BODY_NE;
+        /*else if (mtc.x > 0)*/
+        return mtp.y < 0 ? SnakeBody::BODY_SE : SnakeBody::BODY_NE;
     }
-    /*else if (mtp_y == 0)*/
-    const int mtc_y = y - cy;
-    if (mtc_y < 0)
-        return mtp_x < 0 ? SnakeBody::BODY_SW : SnakeBody::BODY_SE;
-    else if (mtc_y == 0)
+    /*else if (mtp.y == 0)*/
+
+    if (mtc.y < 0)
+        return mtp.x < 0 ? SnakeBody::BODY_SW : SnakeBody::BODY_SE;
+    else if (mtc.y == 0)
         return SnakeBody::BODY_EW;
-    /*else if (mtc_y > 0)*/
-        return mtp_x < 0 ? SnakeBody::BODY_NW : SnakeBody::BODY_NE;
+    /*else if (mtc.y > 0)*/
+        return mtp.x < 0 ? SnakeBody::BODY_NW : SnakeBody::BODY_NE;
 }
 
-SnakeBody::SnakeBody(int x, int y, int px, int py)
-    : m_x{ x }, m_y{ y }
-    , m_type{ tailType(x, y, px, py) }
+SnakeBody::SnakeBody(vec2d newPos, vec2d parentPos)
+    : m_pos{ newPos }
+    , m_type{ tailType(newPos, parentPos) }
 {}
 
-void SnakeBody::advance(int x, int y, int px, int py)
+void SnakeBody::advance(vec2d newPos, vec2d parentPos)
 {
     if (m_tail)
     {
-        m_tail->advance(m_x, m_y, x, y);
-        m_type = bodyType(m_x, m_y, x, y, px, py);
+        m_tail->advance(m_pos, newPos);
+        m_type = bodyType(m_pos, newPos, parentPos);
     }
     else
-        m_type = tailType(x, y, px, py);
-    
-    m_x = x;
-    m_y = y;
-}
-void SnakeBody::grow(int x, int y, int px, int py) {
-    if (!m_tail)
-        m_tail = std::make_unique<SnakeBody>(m_x, m_y, x, y);
-    else
-        m_tail->grow(m_x, m_y, x, y);
-    
-    m_type = bodyType(m_x, m_y, x, y, px, py);
+        m_type = tailType(newPos, parentPos);
 
-    m_x = x;
-    m_y = y;
+    m_pos = newPos;
+}
+void SnakeBody::grow(vec2d newPos, vec2d parentPos) {
+    if (!m_tail)
+        m_tail = std::make_unique<SnakeBody>(m_pos, newPos);
+    else
+        m_tail->grow(m_pos, newPos);
+
+    m_type = bodyType(m_pos, newPos, parentPos);
+    m_pos = newPos;
 }
 void SnakeBody::draw(SDL_Renderer& renderer)
 {
     if (m_tail)
         m_tail->draw(renderer);
-        
-    SDL_Rect rc{ m_x * 16, m_y * 16, 16, 16 };
+
+    SDL_Rect rc{ m_pos.x * 16, m_pos.y * 16, 16, 16 };
     static SDL_Rect body_sprites[] =
     {
         {  0,  16, 16, 16 },
