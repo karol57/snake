@@ -30,11 +30,12 @@ void wrap(int& v, int min, int max)
 }
 
 Snake::Snake()
-    : m_pos{ 40, 30 }
+    : m_pos{ 32, 24 }
     , m_stepProgress{ 0.0 }
     , m_dir{ DIR_NORTH }
     , m_nextDir{ DIR_START }
     , m_growTimer{ growTime }
+    , m_tail{ std::make_unique<SnakeBody>(m_pos - vec2d{ 0, -1 }, m_pos) }
 {}
 
 void Snake::update(double dt)

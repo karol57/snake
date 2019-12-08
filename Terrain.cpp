@@ -91,7 +91,7 @@ void Terrain::update(double dt)
         const int icon = std::uniform_int_distribution{ 0, 63 }(m_randomEngine);
         const vec2d iconPos{ icon % 8, icon / 8 };
         const vec2d iconTilePos = iconPos * TILE_SIZE;
-        m_foods.insert(std::make_pair<vec2d, SDL_Rect>(vec2d{ iconPos }, { iconTilePos.x, iconTilePos.y, 16, 16 }));
+        m_foods.insert(std::make_pair<vec2d, SDL_Rect>(vec2d{ x, y }, { iconTilePos.x, iconTilePos.y, 16, 16 }));
     }
 }
 
