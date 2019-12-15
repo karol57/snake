@@ -2,6 +2,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <algorithm>
 #include <SDL2/SDL_surface.h>
 #include "helpers/SdlImage.hpp"
 using namespace std::string_literals;
@@ -75,9 +76,7 @@ void Terrain::update(double dt)
         if (m_foods.size() >= m_size.area())
             return;
 
-        m_foodTimer += std::uniform_real_distribution{0.5, 4.0}(m_randomEngine);
-
-        std::map<vec2d, SDL_Rect>::iterator it;
+        std::vector<Food>::const_iterator it;
         std::uniform_int_distribution x_dist{ 0, m_size.width - 1 };
         std::uniform_int_distribution y_dist{ 0, m_size.height - 1 };
         int x, y;
@@ -85,22 +84,26 @@ void Terrain::update(double dt)
         {
             x = x_dist(m_randomEngine); x_dist.reset();
             y = y_dist(m_randomEngine); y_dist.reset();
-            it = m_foods.find({ x, y });
+            it = std::find_if(m_foods.cbegin(), m_foods.cend(),
+                              [&x, &y](const auto& food){ return food.isColliding({x, y}); });
         } while (it != m_foods.end());
 
         const int icon = std::uniform_int_distribution{ 0, 63 }(m_randomEngine);
         const vec2d iconPos{ icon % 8, icon / 8 };
         const vec2d iconTilePos = iconPos * TILE_SIZE;
-        m_foods.insert(std::make_pair<vec2d, SDL_Rect>(vec2d{ x, y }, { iconTilePos.x, iconTilePos.y, 16, 16 }));
+        m_foods.emplace_back(vec2d{ x, y }, SDL_Rect{ iconTilePos.x, iconTilePos.y, 16, 16 });
     }
 }
 
 void Terrain::draw(SDL_Renderer& renderer)
 {
     SDL_RenderCopy(&renderer, m_terrainTex.get(), nullptr, nullptr);
-    for (const auto& [pos, srcRc] : m_foods)
-    {
-        SDL_Rect dstRc{ pos.x * 16, pos.y * 16, 16, 16 };
-        SDL_RenderCopy(&renderer, m_food.get(), &srcRc, &dstRc);
-    }
+    for (const Food& food : m_foods)
+        food.draw(renderer, *m_food);
+}
+
+void Food::draw(SDL_Renderer& renderer, SDL_Texture& atlas) const
+{
+    const SDL_Rect dstRc{ m_pos.x * 16, m_pos.y * 16, 16, 16 };
+    SDL_RenderCopy(&renderer, &atlas, &m_texRc, &dstRc);
 }

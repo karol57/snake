@@ -11,9 +11,9 @@ struct vec2d
     constexpr vec2d& operator=(const vec2d&) noexcept = default;
     constexpr vec2d& operator=(vec2d&&) noexcept = default;
 
-    bool operator==(const vec2d& rhs) const noexcept { return x == rhs.x && y == rhs.y; }
-    bool operator!=(const vec2d& rhs) const noexcept { return x != rhs.x || y != rhs.y; }
-    bool operator<(const vec2d& rhs) const noexcept
+    constexpr bool operator==(const vec2d& rhs) const noexcept { return x == rhs.x && y == rhs.y; }
+    constexpr bool operator!=(const vec2d& rhs) const noexcept { return x != rhs.x || y != rhs.y; }
+    constexpr bool operator<(const vec2d& rhs) const noexcept
     {
         if (y < rhs.y)
             return true;
@@ -22,9 +22,9 @@ struct vec2d
         return x < rhs.x;
     }
 
-    vec2d operator-(const vec2d& rhs) const noexcept { return { x - rhs.x, y - rhs.y }; }
+    constexpr vec2d operator-(const vec2d& rhs) const noexcept { return { x - rhs.x, y - rhs.y }; }
 
-    vec2d operator*(int scale) const noexcept { return { x * scale, y * scale }; }
+    constexpr vec2d operator*(int scale) const noexcept { return { x * scale, y * scale }; }
 
     int x;
     int y;

@@ -1,12 +1,13 @@
 #pragma once
 
 #include <random>
-#include <map>
+#include <vector>
 #include <SDL2/SDL_rect.h>
 #include "helpers/SdlSurface.hpp"
 #include "helpers/SdlRenderer.hpp"
 #include "vec2d.hpp"
 #include "size2d.hpp"
+#include "Food.hpp"
 
 class Terrain
 {
@@ -23,5 +24,5 @@ private:
     size2d m_size;
     std::mt19937_64 m_randomEngine;
     double m_foodTimer;
-    std::map<vec2d, SDL_Rect> m_foods;
+    std::vector<Food> m_foods;
 };
