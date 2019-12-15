@@ -21,6 +21,6 @@ private:
     SdlWindowPtr m_window;
     SdlRendererPtr m_renderer;
     SnakeTiles m_snakeTiles;
-    Terrain m_terrain;
     Snake m_snake;
+    Terrain m_terrain;
 };

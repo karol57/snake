@@ -73,6 +73,8 @@ void Terrain::update(double dt)
     m_foodTimer -= dt;
     if (m_foodTimer <= 0)
     {
+        m_foodTimer += std::uniform_real_distribution(1., 5.)(m_randomEngine);
+
         if (m_foods.size() >= m_size.area())
             return;
 
@@ -93,6 +95,18 @@ void Terrain::update(double dt)
         const vec2d iconTilePos = iconPos * TILE_SIZE;
         m_foods.emplace_back(vec2d{ x, y }, SDL_Rect{ iconTilePos.x, iconTilePos.y, 16, 16 });
     }
+}
+
+bool Terrain::eatFoodOn(vec2d pos)
+{
+    const auto fit = std::find_if(m_foods.cbegin(), m_foods.cend(),
+        [pos](const auto& food){ return food.isColliding(pos); });
+
+    if (fit == m_foods.cend())
+        return false;
+
+    m_foods.erase(fit);
+    return true;
 }
 
 void Terrain::draw(SDL_Renderer& renderer)

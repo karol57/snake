@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Terrain.hpp"
 #include "SnakeTiles.hpp"
 #include "SnakeBody.hpp"
 #include "SDL2/SDL_keycode.h"
@@ -19,7 +20,7 @@ class Snake
     };
     static SnakeTiles::Tile dirToTile(Dir) noexcept;
 public:
-    Snake();
+    Snake(Terrain& terrain);
 
     void update(double dt);
     void draw(SDL_Renderer&);
@@ -31,6 +32,6 @@ private:
     double m_stepProgress;
     Dir m_dir;
     Dir m_nextDir;
-    double m_growTimer;
     std::unique_ptr<SnakeBody> m_tail;
+    Terrain& m_terrain;
 };

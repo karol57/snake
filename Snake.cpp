@@ -4,7 +4,6 @@
 #include <SDL2/SDL_render.h>
 
 constexpr static double velocity = 15; // [cells/s]
-constexpr static double growTime = .5; // [s/part]
 extern SnakeTiles* g_snakeTiles;
 
 SnakeTiles::Tile Snake::dirToTile(Dir dir) noexcept
@@ -29,13 +28,13 @@ void wrap(int& v, int min, int max)
         v = min;
 }
 
-Snake::Snake()
-    : m_pos{ 32, 24 }
+Snake::Snake(Terrain& terrain)
+    : m_pos{ 16, 12 }
     , m_stepProgress{ 0.0 }
     , m_dir{ DIR_NORTH }
     , m_nextDir{ DIR_START }
-    , m_growTimer{ growTime }
     , m_tail{ std::make_unique<SnakeBody>(m_pos - vec2d{ 0, -1 }, m_pos) }
+    , m_terrain{ terrain }
 {}
 
 void Snake::update(double dt)
@@ -43,7 +42,6 @@ void Snake::update(double dt)
     if (m_nextDir == DIR_LOCKED || m_nextDir == DIR_START)
         return;
 
-    m_growTimer -= dt;
     m_stepProgress += dt * velocity;
     if (m_stepProgress < 1.0)
         return;
@@ -53,40 +51,44 @@ void Snake::update(double dt)
     const int steps = static_cast<int>(m_stepProgress);
     m_stepProgress -= steps;
 
-    vec2d newPos = m_pos;
-    switch (m_dir)
+    for (int i = 0; i < steps; ++i)
     {
-        case DIR_WEST:  newPos.x -= steps; break;
-        case DIR_EAST:  newPos.x += steps; break;
-        case DIR_NORTH: newPos.y -= steps; break;
-        case DIR_SOUTH: newPos.y += steps; break;
-        default: __builtin_unreachable();
-    }
-
-    wrap(newPos.x, 0, 64);
-    wrap(newPos.y, 0, 48);
-
-    for (const SnakeBody* bodyPart = m_tail.get(); bodyPart != nullptr; bodyPart = bodyPart->tail())
-    {
-        if (bodyPart->pos() == newPos)
+        vec2d newPos = m_pos;
+        switch (m_dir)
         {
-            m_nextDir = DIR_LOCKED;
-            return;
+            case DIR_WEST:  --newPos.x; break;
+            case DIR_EAST:  ++newPos.x; break;
+            case DIR_NORTH: --newPos.y; break;
+            case DIR_SOUTH: ++newPos.y; break;
+            default: __builtin_unreachable();
         }
-    }
 
-    if (m_growTimer <= 0.0)
-    {
-        m_growTimer += growTime;
-        if (!m_tail)
-            m_tail = std::make_unique<SnakeBody>(m_pos, newPos);
-        else
-            m_tail->grow(m_pos, newPos);
-    }
-    else if (m_tail)
-        m_tail->advance(m_pos, newPos);
+        wrap(newPos.x, 0, m_terrain.size().width);
+        wrap(newPos.y, 0, m_terrain.size().height);
 
-    m_pos = newPos;
+        for (const SnakeBody* bodyPart = m_tail.get(); bodyPart != nullptr; bodyPart = bodyPart->tail())
+        {
+            if (bodyPart->pos() == newPos)
+            {
+                m_nextDir = DIR_LOCKED;
+                goto end;
+            }
+        }
+
+        const bool shouldGrow = m_terrain.eatFoodOn(newPos);
+        if (shouldGrow)
+        {
+            if (!m_tail)
+                m_tail = std::make_unique<SnakeBody>(m_pos, newPos);
+            else
+                m_tail->grow(m_pos, newPos);
+        }
+        else if (m_tail)
+            m_tail->advance(m_pos, newPos);
+
+        m_pos = newPos;
+    }
+    end:;
 }
 
 void Snake::draw(SDL_Renderer& renderer)
@@ -112,6 +114,7 @@ void Snake::onKeyDown(SDL_Keycode key)
 
 void Snake::reset()
 {
+    Terrain& terrain = m_terrain;
     this->~Snake();
-    new (this) Snake();
+    new (this) Snake(terrain);
 }

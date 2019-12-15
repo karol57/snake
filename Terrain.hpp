@@ -17,6 +17,10 @@ public:
 
     void update(double dt);
     void draw(SDL_Renderer&);
+
+    bool eatFoodOn(vec2d pos);
+
+    const size2d& size() const noexcept { return m_size; }
 private:
     SdlSurfacePtr m_sprites;
     SdlTexturePtr m_food;

@@ -5,16 +5,19 @@
 
 SnakeTiles* g_snakeTiles;
 
+constexpr size2d MAP_SIZE{ 64, 24 };
+
 
 Game::Game()
     : m_running{ false }
     , m_window{ SdlCreateWindow("Snake",
                                 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                1024, 768,
+                                MAP_SIZE.width * 16, MAP_SIZE.height * 16,
                                 SDL_WINDOW_SHOWN) }
     , m_renderer{ SdlCreateRenderer(m_window.get(), -1, SDL_RENDERER_ACCELERATED) }
     , m_snakeTiles{ *m_renderer, "Snake.png" }
-    , m_terrain{ *m_renderer, { 64, 48 } }
+    , m_terrain{ *m_renderer, MAP_SIZE }
+    , m_snake{ m_terrain }
 {
     g_snakeTiles = &m_snakeTiles;
 }
